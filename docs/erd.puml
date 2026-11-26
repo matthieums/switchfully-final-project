@@ -1,0 +1,122 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam linetype ortho
+skinparam EntityBackgroundColor #F8F9FA
+skinparam EntityBorderColor #495057
+skinparam ArrowColor #495057
+
+hide circle
+
+entity users {
+    * user_id : BIGINT <<PK>>
+    --
+    * display_name : VARCHAR
+    * email : VARCHAR <<UNIQUE>>
+    * password : VARCHAR
+}
+
+entity students {
+    * student_id : BIGINT <<PK, FK>>
+    --
+    class_id : BIGINT <<FK>>
+}
+
+entity coaches {
+    * coach_id : BIGINT <<PK, FK>>
+}
+
+entity classes {
+    * class_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR
+}
+
+entity class_coach {
+    * class_id : BIGINT <<PK, FK>>
+    * coach_id : BIGINT <<PK, FK>>
+}
+
+entity courses {
+    * course_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR
+    * coach_id : BIGINT <<FK>>
+}
+
+entity modules {
+    * module_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR
+}
+
+entity sub_modules {
+    * sub_module_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR
+}
+
+entity codelabs {
+    * codelab_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR
+}
+
+entity course_module {
+    * course_id : BIGINT <<PK, FK>>
+    * module_id : BIGINT <<PK, FK>>
+}
+
+entity module_sub_module {
+    * module_id : BIGINT <<PK, FK>>
+    * sub_module_id : BIGINT <<PK, FK>>
+}
+
+entity sub_module_codelab {
+    * sub_module_id : BIGINT <<PK, FK>>
+    * codelab_id : BIGINT <<PK, FK>>
+}
+
+entity progress {
+    * progress_id : BIGINT <<PK>>
+    --
+    * student_id : BIGINT <<FK>>
+    * codelab_id : BIGINT <<FK>>
+    * status : VARCHAR
+}
+
+entity comments {
+    * comment_id : BIGINT <<PK>>
+    --
+    * student_id : BIGINT <<FK>>
+    * codelab_id : BIGINT <<FK>>
+    * text : TEXT
+}
+
+' Inheritance (joined tables)
+users ||--o| students
+users ||--o| coaches
+
+' Class relationships
+classes |o--o{ students
+classes ||--o{ class_coach
+coaches ||--o{ class_coach
+
+' Course structure
+coaches ||--o{ courses
+courses ||--o{ course_module
+modules ||--o{ course_module
+modules ||--o{ module_sub_module
+sub_modules ||--o{ module_sub_module
+sub_modules ||--o{ sub_module_codelab
+codelabs ||--o{ sub_module_codelab
+
+' Progress and comments
+students ||--o{ progress
+codelabs ||--o{ progress
+students ||--o{ comments
+codelabs ||--o{ comments
+
+@enduml

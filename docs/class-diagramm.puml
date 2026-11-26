@@ -1,0 +1,94 @@
+@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam ClassBackgroundColor #F8F9FA
+skinparam ClassBorderColor #495057
+skinparam ArrowColor #495057
+
+class User {
+    - userId: Long
+    - displayName: String
+    - email: String
+    - password: String
+}
+
+class Student {
+    - studentId: Long
+}
+
+class Coach {
+    - coachId: Long
+}
+
+class Class {
+    - classId: Long
+    - name: String
+}
+
+class Course {
+    - courseId: Long
+    - name: String
+}
+
+class Module {
+    - moduleId: Long
+    - name: String
+}
+
+class SubModule {
+    - subModuleId: Long
+    - name: String
+}
+
+class Codelab {
+    - codelabId: Long
+    - name: String
+}
+
+class Progress {
+    - progressId: Long
+    - status: ProgressStatus
+}
+
+class Comment {
+    - commentId: Long
+    - text: String
+}
+
+enum ProgressStatus {
+    NOT_STARTED
+    BUSY
+    FEEDBACK_NEEDED
+    STUCK
+    TESTING
+    REFACTORING
+    DONE
+}
+
+' Inheritance
+User <|-- Student
+User <|-- Coach
+
+' Class relationships
+Class "1" -- "0..*" Student : contains
+Class "0..*" -- "0..*" Coach : has coaches
+
+' Course structure (many-to-many)
+Coach "1" -- "0..*" Course : creates
+Course "0..*" -- "0..*" Module : contains
+Module "0..*" -- "0..*" SubModule : contains
+SubModule "0..*" -- "0..*" Codelab : contains
+
+' Progress relationships
+Student "1" -- "0..*" Progress : has
+Codelab "1" -- "0..*" Progress : tracks
+Progress ..> ProgressStatus
+
+' Comment relationships
+Student "1" -- "0..*" Comment : writes
+Codelab "1" -- "0..*" Comment : has
+
+@enduml
